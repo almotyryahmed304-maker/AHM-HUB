@@ -2,9 +2,10 @@
 -- Controls: 
 --   SHIFT = Auto Switch (Head ↔ Torso) - works ANYWHERE (car or on foot)
 --   ALT = HEAD mode - works ANYWHERE (car or on foot)
---   G = Toggle CLUTCH mode (ON/OFF) - when ON, aim goes to HEAD in car
+--   F = Toggle CLUTCH mode (ON/OFF) - ONLY works when in vehicle
+--   G = Open/Close GUI (works anywhere)
+--   K = Toggle FOV Circle
 --   CLUTCH automatically turns OFF when you exit the vehicle
---   When you re-enter vehicle, you must press G again to turn it ON
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -753,6 +754,8 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- ================= VEHICLE DETECTION - AUTO TURN OFF CLUTCH =================
+local isInVehicle = false
+
 local function CheckVehicle()
     local char = LocalPlayer.Character
     if not char then return end
@@ -760,29 +763,23 @@ local function CheckVehicle()
     local inVehicle = IsInVehicle(char)
     local wasInVehicle = isInVehicle
     
-    -- Update vehicle state
     isInVehicle = inVehicle
     
-    -- If we exited the vehicle, turn off CLUTCH automatically
     if wasInVehicle and not inVehicle then
         if clutchMode then
             clutchMode = false
             ClutchToggle.Text = "CLUTCH: OFF"
             ClutchToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
             print("🚗 Exited vehicle - CLUTCH turned OFF automatically")
-            print("💡 Press G to turn CLUTCH ON when you enter a vehicle")
+            print("💡 Press F to turn CLUTCH ON when you enter a vehicle")
         end
     end
     
-    -- If we entered the vehicle
     if not wasInVehicle and inVehicle then
         print("🚗 Entered vehicle - CLUTCH is OFF")
-        print("💡 Press G to turn CLUTCH ON for HEAD aim")
+        print("💡 Press F to turn CLUTCH ON for HEAD aim")
     end
 end
-
--- Vehicle state tracking
-local isInVehicle = false
 
 task.spawn(function()
     while true do
@@ -842,8 +839,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         end
     end
     
-    -- G -> Toggle CLUTCH mode (only works if in vehicle)
-    if input.KeyCode == Enum.KeyCode.G then
+    -- F -> Toggle CLUTCH mode (ONLY works when in vehicle)
+    if input.KeyCode == Enum.KeyCode.F then
         local char = LocalPlayer.Character
         if not char then
             print("⚠️ You need to be in a vehicle to use CLUTCH!")
@@ -856,7 +853,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             return
         end
         
-        -- Toggle CLUTCH
         clutchMode = not clutchMode
         if clutchMode then
             ClutchToggle.Text = "CLUTCH: ON"
@@ -869,8 +865,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         end
     end
     
-    -- Original G for GUI (now using RightControl or different key)
-    if input.KeyCode == Enum.KeyCode.RightControl then
+    -- G -> Open/Close GUI (works anywhere)
+    if input.KeyCode == Enum.KeyCode.G then
         guiOpen = not guiOpen
         MainFrame.Visible = guiOpen
         ToggleButton.Visible = not guiOpen
@@ -906,7 +902,7 @@ SmartToggle.MouseButton1Click:Connect(function()
     end
 end)
 
--- CLUTCH MODE (Manual button press - same as G key)
+-- CLUTCH MODE (Manual button press - same as F key)
 ClutchToggle.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character
     if not char then
@@ -1082,12 +1078,11 @@ print("✅ AHM Script Loaded Successfully!")
 print("🎮 Controls:")
 print("   SHIFT = AUTO SWITCH (Head ↔ Torso) - 0.7 seconds each")
 print("   ALT = HEAD mode")
-print("   G = Toggle CLUTCH mode (ON/OFF) - Only works in vehicle!")
-print("   ⏳ 3 second cooldown between mode switches")
-print("   🚗 CLUTCH automatically turns OFF when you exit vehicle")
-print("   💡 Press G again when you re-enter vehicle to turn CLUTCH ON")
-print("   RightControl = Open/Close GUI")
+print("   F = Toggle CLUTCH mode (ON/OFF) - ONLY works in vehicle!")
+print("   G = Open/Close GUI")
 print("   K = Toggle FOV Circle")
+print("   🚗 CLUTCH automatically turns OFF when you exit vehicle")
+print("   💡 Press F again when you re-enter vehicle to turn CLUTCH ON")
 print("✅ SMART mode: ON by default - SHIFT and ALT work")
 print("🧠 AI LEAD: OFF by default - Press 'AI LEAD' button to enable")
 ApplyTheme()
