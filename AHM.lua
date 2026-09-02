@@ -560,7 +560,7 @@ FOVCircle.Transparency = 0.6
 FOVCircle.Filled = false
 FOVCircle.Visible = false
 
--- Auto Switch: Head (0.7s) then Torso (0.7s)
+-- Auto Switch: Head (0.5s) then Torso (0.5s)
 local AIM_MODES = {
     {name = "Auto Switch (Head ↔ Torso)", parts = {"Head", "HumanoidRootPart"}},
     {name = "Head (fixed)",               part = "Head"},
@@ -568,7 +568,7 @@ local AIM_MODES = {
 
 local currentAutoIndex = 1
 local lastSwitchTime = os.clock()
-local SWITCH_INTERVAL = 0.7
+local SWITCH_INTERVAL = 0.5  -- نص ثانية
 
 -- ================= FUNCTIONS =================
 local function IsAlive(char)
@@ -1094,13 +1094,13 @@ end)
 
 print("✅ AHM Script Loaded Successfully!")
 print("🎮 Controls:")
-print("   SHIFT = AUTO SWITCH (Head ↔ Torso) - 0.7 seconds each")
+print("   SHIFT = AUTO SWITCH (Head ↔ Torso) - 0.5 seconds each")
 print("   ALT = HEAD mode")
 print("   G = Open/Close GUI")
 print("   K = Toggle FOV Circle")
 print("   🚗 CLUTCH Button in top center - Press for black screen effect")
 print("   👁️ إخفاء القلتش: OFF by default - Click to hide CLUTCH button")
 print("   🧠 تسبيق: OFF by default - Press 'تسبيق' button to enable")
-print("   📊 قوة التسبيق: 50% default - Lead strength multiplier: 6x (was 3.5x)")
+print("   📊 قوة التسبيق: 50% default - Lead strength multiplier: 6x")
 print("   ⚙️ التبديل بالازرار: ON by default - SHIFT and ALT work")
 ApplyTheme()
