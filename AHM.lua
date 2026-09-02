@@ -560,7 +560,8 @@ FOVCircle.Transparency = 0.6
 FOVCircle.Filled = false
 FOVCircle.Visible = false
 
--- Auto Switch: Head (0.5s) then Torso (0.5s)
+-- Auto Switch: Head (0.3s) then Torso (0.5s) - As requested
+-- Note: This is unusual but configured as you asked
 local AIM_MODES = {
     {name = "Auto Switch (Head ↔ Torso)", parts = {"Head", "HumanoidRootPart"}},
     {name = "Head (fixed)",               part = "Head"},
@@ -568,7 +569,10 @@ local AIM_MODES = {
 
 local currentAutoIndex = 1
 local lastSwitchTime = os.clock()
-local SWITCH_INTERVAL = 0.5  -- نص ثانية
+
+-- Create custom timing array: Head=0.3s, Torso=0.5s
+local switchTimes = {0.3, 0.5}  -- Index 1 = Head, Index 2 = Torso
+local currentSwitchTime = switchTimes[1]
 
 -- ================= FUNCTIONS =================
 local function IsAlive(char)
@@ -736,9 +740,12 @@ local function GetTargetPart(char)
         targetPartName = "Head"
     else
         local mode = AIM_MODES[1]
-        if os.clock() - lastSwitchTime >= SWITCH_INTERVAL then
+        -- Use the custom timing array
+        if os.clock() - lastSwitchTime >= currentSwitchTime then
             lastSwitchTime = os.clock()
             currentAutoIndex = currentAutoIndex % #mode.parts + 1
+            -- Update the current switch time based on the new index
+            currentSwitchTime = switchTimes[currentAutoIndex]
         end
         targetPartName = mode.parts[currentAutoIndex]
     end
@@ -875,6 +882,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             forceMode = 1
             currentAutoIndex = 1
             lastSwitchTime = os.clock()
+            currentSwitchTime = switchTimes[1]  -- Reset to Head timing
             lastModeSwitchTime = currentTime
             print("🔄 AUTO SWITCH mode (Head ↔ Torso)")
         else
@@ -1009,6 +1017,7 @@ AimPartToggle.MouseButton1Click:Connect(function()
             forceMode = 1
             currentAutoIndex = 1
             lastSwitchTime = os.clock()
+            currentSwitchTime = switchTimes[1]
             lastModeSwitchTime = currentTime
             print("🔄 AUTO SWITCH mode")
         end
@@ -1094,7 +1103,7 @@ end)
 
 print("✅ AHM Script Loaded Successfully!")
 print("🎮 Controls:")
-print("   SHIFT = AUTO SWITCH (Head ↔ Torso) - 0.5 seconds each")
+print("   SHIFT = AUTO SWITCH (Head 0.3s ↔ Torso 0.5s)")
 print("   ALT = HEAD mode")
 print("   G = Open/Close GUI")
 print("   K = Toggle FOV Circle")
