@@ -17,7 +17,7 @@ local LocalPlayer = Players.LocalPlayer
 
 -- ================= CONFIGURATION =================
 local espInventoryEnabled = true 
-local MAX_DISTANCE = 2000 
+local MAX_DISTANCE = 3700 
 local UPDATE_INTERVAL = 1 
 local BillboardCache = {}
 local nameCache = {} 
