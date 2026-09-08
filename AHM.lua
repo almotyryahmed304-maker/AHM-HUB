@@ -1,11 +1,12 @@
 -- AHM Script - Fully Decrypted & Unlocked
 -- Controls: 
---   SHIFT = Auto Switch (Head ↔ Torso) - works ANYWHERE (car or on foot)
+--   SHIFT = Auto Switch (Head ↔ Torso) - Head 0.4s, Torso 0.5s
 --   ALT = HEAD mode - works ANYWHERE (car or on foot)
 --   G = Open/Close GUI
 --   K = Toggle FOV Circle
---   CLUTCH Button in top center - Press for black screen effect
+--   CLUTCH Button in top center - Manual black flash
 --   إخفاء القلتش: OFF by default (button is VISIBLE when script starts)
+--   شاشة الأجانب: OFF by default - NO EXTERNAL UI, NO NOTIFICATIONS, NO SLIDER, NO ENABLE BUTTON
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -225,8 +226,8 @@ local Themes = {
 local CurrentTheme = Themes.Navy
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0.4, 0, 0.85, 0)
-MainFrame.Position = UDim2.new(0.3, 0, 0.08, 0)
+MainFrame.Size = UDim2.new(0.4, 0, 0.95, 0)
+MainFrame.Position = UDim2.new(0.3, 0, 0.05, 0)
 MainFrame.BackgroundColor3 = CurrentTheme.Background
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
@@ -245,7 +246,7 @@ local MainDrag = Instance.new("Frame", MainFrame)
 MainDrag.Size = UDim2.new(1,0,0.06,0)
 MainDrag.BackgroundTransparency = 1
 
--- ================= CLUTCH BUTTON (قلتش AHM) =================
+-- ================= CLUTCH BUTTON (قلتش AHM) - Manual =================
 local ClutchPlayer = Players.LocalPlayer
 local ClutchCamera = workspace.CurrentCamera
 local TweenService = game:GetService("TweenService")
@@ -288,83 +289,28 @@ ClutchButton.MouseLeave:Connect(function()
     TweenService:Create(ClutchButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20, 20, 20)}):Play()
 end)
 
--- الشاشة السوداء
-local ClutchBlackFrame = Instance.new("Frame")
-ClutchBlackFrame.Name = "BlackOverlay"
-ClutchBlackFrame.Size = UDim2.new(1, 0, 1, 0)
-ClutchBlackFrame.Position = UDim2.new(0, 0, 0, 0)
-ClutchBlackFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-ClutchBlackFrame.BackgroundTransparency = 0
-ClutchBlackFrame.Visible = false
-ClutchBlackFrame.ZIndex = 10
-ClutchBlackFrame.Active = true
-ClutchBlackFrame.Parent = ClutchScreenGui
+-- ================= CLUTCH MANUAL FUNCTION =================
+local function ShowClutchEffect()
+    local blackFrame = Instance.new("Frame")
+    blackFrame.Size = UDim2.new(1, 0, 1, 0)
+    blackFrame.Position = UDim2.new(0, 0, 0, 0)
+    blackFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+    blackFrame.BackgroundTransparency = 0
+    blackFrame.ZIndex = 10
+    blackFrame.Active = true
+    blackFrame.Parent = ScreenGui
 
--- زر إغلاق يدوي (X)
-local ClutchCloseButton = Instance.new("TextButton")
-ClutchCloseButton.Size = UDim2.new(0, 40, 0, 40)
-ClutchCloseButton.Position = UDim2.new(1, -50, 0, 10)
-ClutchCloseButton.Text = "X"
-ClutchCloseButton.TextColor3 = Color3.fromRGB(200, 200, 200)
-ClutchCloseButton.BackgroundTransparency = 1
-ClutchCloseButton.Font = Enum.Font.GothamBold
-ClutchCloseButton.TextSize = 20
-ClutchCloseButton.ZIndex = 11
-ClutchCloseButton.Parent = ClutchBlackFrame
-
--- متغير للتحكم
-local ClutchIsActive = false
-
--- دالة إلغاء أي مشاهدة وإعادة الكاميرا
-local function ClutchRestoreCamera()
-    ClutchCamera.CameraType = Enum.CameraType.Custom
-    if ClutchPlayer.Character then
-        local humanoid = ClutchPlayer.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            ClutchCamera.CameraSubject = humanoid
-        end
-    end
-    if _G.SpectateConnection then
-        _G.SpectateConnection:Disconnect()
-        _G.SpectateConnection = nil
-    end
-end
-
--- دالة إخفاء الشاشة السوداء والعودة للوضع الطبيعي
-local function ClutchHideBlackScreen()
-    ClutchBlackFrame.Visible = false
-    ClutchButton.Text = "قلتش AHM"
-    ClutchButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    ClutchRestoreCamera()
-    ClutchIsActive = false
-end
-
--- دالة إظهار الشاشة وتفعيل العداد
-local function ClutchShowBlackScreen()
-    if ClutchIsActive then return end
-
-    ClutchIsActive = true
-    ClutchBlackFrame.Visible = true
-    ClutchButton.Text = "جاري..."
-    ClutchButton.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
-
-    ClutchRestoreCamera()
     task.wait(0.1)
-    ClutchHideBlackScreen()
+    blackFrame:Destroy()
 end
 
--- ربط الأحداث
-ClutchButton.MouseButton1Click:Connect(ClutchShowBlackScreen)
-
-ClutchCloseButton.MouseButton1Click:Connect(function()
-    ClutchHideBlackScreen()
-end)
+ClutchButton.MouseButton1Click:Connect(ShowClutchEffect)
 
 -- ================= إخفاء القلتش TOGGLE (OFF by default) =================
 local HideGlitchToggle = Instance.new("TextButton", MainFrame)
 HideGlitchToggle.Size = UDim2.new(0.8,0,0.07,0)
 HideGlitchToggle.Position = UDim2.new(0.1,0,0.07,0)
-HideGlitchToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)  -- أحمر (OFF)
+HideGlitchToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 HideGlitchToggle.Text = "إخفاء القلتش: OFF"
 HideGlitchToggle.TextScaled = true
 HideGlitchToggle.TextColor3 = Color3.new(1,1,1)
@@ -394,20 +340,30 @@ SmartToggle.TextScaled = true
 SmartToggle.TextColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", SmartToggle).CornerRadius = UDim.new(0,8)
 
+-- ================= شاشة الأجانب TOGGLE - NO EXTERNAL UI, NO NOTIFICATIONS =================
+local ForeignScreenToggle = Instance.new("TextButton", MainFrame)
+ForeignScreenToggle.Size = UDim2.new(0.8,0,0.07,0)
+ForeignScreenToggle.Position = UDim2.new(0.1,0,0.23,0)
+ForeignScreenToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+ForeignScreenToggle.Text = "شاشة الأجانب: OFF"
+ForeignScreenToggle.TextScaled = true
+ForeignScreenToggle.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", ForeignScreenToggle).CornerRadius = UDim.new(0,8)
+
 -- ================= تسبيق (AI LEAD) =================
 local AILeadToggle = Instance.new("TextButton", MainFrame)
 AILeadToggle.Size = UDim2.new(0.8,0,0.07,0)
-AILeadToggle.Position = UDim2.new(0.1,0,0.23,0)
+AILeadToggle.Position = UDim2.new(0.1,0,0.31,0)
 AILeadToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 AILeadToggle.Text = "تسبيق: OFF"
 AILeadToggle.TextScaled = true
 AILeadToggle.TextColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", AILeadToggle).CornerRadius = UDim.new(0,8)
 
--- ================= تسبيق سلايدر (حجم طبيعي) =================
+-- ================= تسبيق سلايدر =================
 local AILabel = Instance.new("TextLabel", MainFrame)
 AILabel.Size = UDim2.new(0.4,0,0.05,0)
-AILabel.Position = UDim2.new(0.1,0,0.31,0)
+AILabel.Position = UDim2.new(0.1,0,0.39,0)
 AILabel.BackgroundTransparency = 1
 AILabel.Text = "قوة التسبيق: 50%"
 AILabel.TextColor3 = Color3.fromRGB(255,255,255)
@@ -416,7 +372,7 @@ AILabel.Font = Enum.Font.SourceSansBold
 
 local AILeadSlider = Instance.new("TextBox", MainFrame)
 AILeadSlider.Size = UDim2.new(0.4,0,0.05,0)
-AILeadSlider.Position = UDim2.new(0.5,0,0.31,0)
+AILeadSlider.Position = UDim2.new(0.5,0,0.39,0)
 AILeadSlider.BackgroundColor3 = Color3.fromRGB(50,50,50)
 AILeadSlider.Text = "50"
 AILeadSlider.TextColor3 = Color3.fromRGB(255,255,255)
@@ -425,7 +381,7 @@ Instance.new("UICorner", AILeadSlider).CornerRadius = UDim.new(0,8)
 
 local ESPInventoryToggle = Instance.new("TextButton", MainFrame)
 ESPInventoryToggle.Size = UDim2.new(0.8,0,0.07,0)
-ESPInventoryToggle.Position = UDim2.new(0.1,0,0.37,0)
+ESPInventoryToggle.Position = UDim2.new(0.1,0,0.45,0)
 ESPInventoryToggle.BackgroundColor3 = Color3.fromRGB(0,255,0)
 ESPInventoryToggle.Text = "ESP Inventory: ON"
 ESPInventoryToggle.TextScaled = true
@@ -433,7 +389,7 @@ Instance.new("UICorner", ESPInventoryToggle).CornerRadius = UDim.new(0,8)
 
 local ESPToggle = Instance.new("TextButton", MainFrame)
 ESPToggle.Size = UDim2.new(0.8,0,0.07,0)
-ESPToggle.Position = UDim2.new(0.1,0,0.44,0)
+ESPToggle.Position = UDim2.new(0.1,0,0.52,0)
 ESPToggle.BackgroundColor3 = Color3.fromRGB(255,0,0)
 ESPToggle.Text = "ESP: ON"
 ESPToggle.TextScaled = true
@@ -441,7 +397,7 @@ Instance.new("UICorner", ESPToggle).CornerRadius = UDim.new(0,8)
 
 local AimbotToggle = Instance.new("TextButton", MainFrame)
 AimbotToggle.Size = UDim2.new(0.8,0,0.07,0)
-AimbotToggle.Position = UDim2.new(0.1,0,0.51,0)
+AimbotToggle.Position = UDim2.new(0.1,0,0.59,0)
 AimbotToggle.BackgroundColor3 = Color3.fromRGB(255,0,0)
 AimbotToggle.Text = "Aimbot: ON"
 AimbotToggle.TextScaled = true
@@ -449,7 +405,7 @@ Instance.new("UICorner", AimbotToggle).CornerRadius = UDim.new(0,8)
 
 local WallcheckToggle = Instance.new("TextButton", MainFrame)
 WallcheckToggle.Size = UDim2.new(0.8,0,0.07,0)
-WallcheckToggle.Position = UDim2.new(0.1,0,0.58,0)
+WallcheckToggle.Position = UDim2.new(0.1,0,0.66,0)
 WallcheckToggle.BackgroundColor3 = Color3.fromRGB(0,255,0)
 WallcheckToggle.Text = "Wallcheck: ON"
 WallcheckToggle.TextScaled = true
@@ -458,7 +414,7 @@ Instance.new("UICorner", WallcheckToggle).CornerRadius = UDim.new(0,8)
 
 local FOVSlider = Instance.new("TextBox", MainFrame)
 FOVSlider.Size = UDim2.new(0.8,0,0.07,0)
-FOVSlider.Position = UDim2.new(0.1,0,0.65,0)
+FOVSlider.Position = UDim2.new(0.1,0,0.73,0)
 FOVSlider.BackgroundColor3 = Color3.fromRGB(50,50,50)
 FOVSlider.Text = "FOV: 150"
 FOVSlider.TextColor3 = Color3.fromRGB(255,0,0)
@@ -467,7 +423,7 @@ Instance.new("UICorner", FOVSlider).CornerRadius = UDim.new(0,8)
 
 local AimPartToggle = Instance.new("TextButton", MainFrame)
 AimPartToggle.Size = UDim2.new(0.8,0,0.07,0)
-AimPartToggle.Position = UDim2.new(0.1,0,0.72,0)
+AimPartToggle.Position = UDim2.new(0.1,0,0.80,0)
 AimPartToggle.BackgroundColor3 = Color3.fromRGB(100,100,255)
 AimPartToggle.Text = "Target: Auto Switch (Head ↔ Torso)"
 AimPartToggle.TextScaled = true
@@ -476,7 +432,7 @@ Instance.new("UICorner", AimPartToggle).CornerRadius = UDim.new(0,8)
 
 local FOVCircleToggle = Instance.new("TextButton", MainFrame)
 FOVCircleToggle.Size = UDim2.new(0.8,0,0.07,0)
-FOVCircleToggle.Position = UDim2.new(0.1,0,0.79,0)
+FOVCircleToggle.Position = UDim2.new(0.1,0,0.87,0)
 FOVCircleToggle.BackgroundColor3 = Color3.fromRGB(0,255,0)
 FOVCircleToggle.Text = "FOV Circle: ON"
 FOVCircleToggle.TextScaled = true
@@ -484,8 +440,8 @@ FOVCircleToggle.TextColor3 = Color3.new(1,1,1)
 Instance.new("UICorner", FOVCircleToggle).CornerRadius = UDim.new(0,8)
 
 local PlayerListFrame = Instance.new("ScrollingFrame", MainFrame)
-PlayerListFrame.Size = UDim2.new(0.8,0,0.13,0)
-PlayerListFrame.Position = UDim2.new(0.1,0,0.87,0)
+PlayerListFrame.Size = UDim2.new(0.8,0,0.10,0)
+PlayerListFrame.Position = UDim2.new(0.1,0,0.95,0)
 PlayerListFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 PlayerListFrame.ScrollBarThickness = 6
 PlayerListFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -507,7 +463,7 @@ local function ApplyTheme()
 end
 
 -- ================= إخفاء القلتش FUNCTION =================
-local clutchVisible = true  -- الزر ظاهر افتراضي
+local clutchVisible = true
 
 HideGlitchToggle.MouseButton1Click:Connect(function()
     clutchVisible = not clutchVisible
@@ -515,12 +471,33 @@ HideGlitchToggle.MouseButton1Click:Connect(function()
         HideGlitchToggle.Text = "إخفاء القلتش: OFF"
         HideGlitchToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
         ClutchButton.Visible = true
-        print("✅ زر القلتش ظاهر (الإخفاء معطل)")
     else
         HideGlitchToggle.Text = "إخفاء القلتش: ON"
         HideGlitchToggle.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
         ClutchButton.Visible = false
-        print("❌ زر القلتش مخفي (الإخفاء مفعل)")
+    end
+end)
+
+-- ================= شاشة الأجانب FUNCTION (55%, NO EXTERNAL UI, NO NOTIFICATIONS) =================
+local foreignScreenEnabled = false
+
+ForeignScreenToggle.MouseButton1Click:Connect(function()
+    foreignScreenEnabled = not foreignScreenEnabled
+    if foreignScreenEnabled then
+        ForeignScreenToggle.Text = "شاشة الأجانب: ON"
+        ForeignScreenToggle.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        -- Apply stretch WITHOUT any external UI or notifications
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("http://3mhub.online/load/stretch-screen.lua"))()
+        end)
+        if not success then
+            -- If the external script fails, apply it manually to avoid UI
+            workspace.CurrentCamera.ViewportSize = Vector2.new(1080, 1080)
+        end
+    else
+        ForeignScreenToggle.Text = "شاشة الأجانب: OFF"
+        ForeignScreenToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        workspace.CurrentCamera.ViewportSize = Vector2.new(1920, 1080)
     end
 end)
 
@@ -537,18 +514,13 @@ local AIM_SMOOTHNESS = 0.8
 local PREDICTION_TIME = 0.04
 local guiOpen = false
 
--- SMART MODE: ON by default
 local smartMode = true
-
--- AI LEAD: OFF by default
 local aiLeadEnabled = false
-local aiLeadStrength = 0.5  -- 50%
+local aiLeadStrength = 0.5
 local lastDirection = nil
 
--- Force mode: 1 = Auto Switch, 2 = Head
 local forceMode = 1
 
--- ================= COOLDOWN SYSTEM =================
 local lastModeSwitchTime = 0
 local MODE_SWITCH_COOLDOWN = 3
 
@@ -560,8 +532,7 @@ FOVCircle.Transparency = 0.6
 FOVCircle.Filled = false
 FOVCircle.Visible = false
 
--- Auto Switch: Head (0.3s) then Torso (0.5s) - As requested
--- Note: This is unusual but configured as you asked
+-- Auto Switch: Head (0.4s) then Torso (0.5s)
 local AIM_MODES = {
     {name = "Auto Switch (Head ↔ Torso)", parts = {"Head", "HumanoidRootPart"}},
     {name = "Head (fixed)",               part = "Head"},
@@ -569,9 +540,7 @@ local AIM_MODES = {
 
 local currentAutoIndex = 1
 local lastSwitchTime = os.clock()
-
--- Create custom timing array: Head=0.3s, Torso=0.5s
-local switchTimes = {0.3, 0.5}  -- Index 1 = Head, Index 2 = Torso
+local switchTimes = {0.4, 0.5}
 local currentSwitchTime = switchTimes[1]
 
 -- ================= FUNCTIONS =================
@@ -732,7 +701,6 @@ Players.PlayerAdded:Connect(UpdateProtectedList)
 Players.PlayerRemoving:Connect(UpdateProtectedList)
 UpdateProtectedList()
 
--- ================= GET TARGET PART =================
 local function GetTargetPart(char)
     local targetPartName
     
@@ -740,11 +708,9 @@ local function GetTargetPart(char)
         targetPartName = "Head"
     else
         local mode = AIM_MODES[1]
-        -- Use the custom timing array
         if os.clock() - lastSwitchTime >= currentSwitchTime then
             lastSwitchTime = os.clock()
             currentAutoIndex = currentAutoIndex % #mode.parts + 1
-            -- Update the current switch time based on the new index
             currentSwitchTime = switchTimes[currentAutoIndex]
         end
         targetPartName = mode.parts[currentAutoIndex]
@@ -768,7 +734,6 @@ local function GetTargetPart(char)
     return part or char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
 end
 
--- ================= AI LEAD PREDICTION (تسبيق) =================
 local function GetPredictedPosition(char)
     local part = GetTargetPart(char)
     if not part then return nil end
@@ -805,7 +770,6 @@ local function GetPredictedPosition(char)
         distance = (myRoot.Position - root.Position).Magnitude
     end
     
-    -- قوة التسبيق = (قوة السلايدر) × 6
     local leadMultiplier = aiLeadStrength * 6
     
     if distance > 150 then
@@ -865,16 +829,13 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- ================= KEYBOARD CONTROLS =================
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
     local currentTime = os.clock()
     
-    -- SHIFT -> Auto Switch mode
     if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
         if not smartMode then
-            print("⚠️ التبديل بالازرار مقفل! اضغط زر 'التبديل بالازرار' للتشغيل")
             return
         end
         
@@ -882,33 +843,22 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             forceMode = 1
             currentAutoIndex = 1
             lastSwitchTime = os.clock()
-            currentSwitchTime = switchTimes[1]  -- Reset to Head timing
+            currentSwitchTime = switchTimes[1]
             lastModeSwitchTime = currentTime
-            print("🔄 AUTO SWITCH mode (Head ↔ Torso)")
-        else
-            local remaining = math.ceil(MODE_SWITCH_COOLDOWN - (currentTime - lastModeSwitchTime))
-            print("⏳ Cooldown! Wait " .. remaining .. " seconds before switching")
         end
     end
     
-    -- ALT -> Head mode
     if input.KeyCode == Enum.KeyCode.LeftAlt or input.KeyCode == Enum.KeyCode.RightAlt then
         if not smartMode then
-            print("⚠️ التبديل بالازرار مقفل! اضغط زر 'التبديل بالازرار' للتشغيل")
             return
         end
         
         if currentTime - lastModeSwitchTime >= MODE_SWITCH_COOLDOWN then
             forceMode = 2
             lastModeSwitchTime = currentTime
-            print("🔴 HEAD mode")
-        else
-            local remaining = math.ceil(MODE_SWITCH_COOLDOWN - (currentTime - lastModeSwitchTime))
-            print("⏳ Cooldown! Wait " .. remaining .. " seconds before switching")
         end
     end
     
-    -- G -> Open/Close GUI
     if input.KeyCode == Enum.KeyCode.G then
         guiOpen = not guiOpen
         MainFrame.Visible = guiOpen
@@ -930,53 +880,41 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- ================= BUTTONS =================
--- إخفاء القلتش (تم تعريفه أعلاه)
-
--- ================= التبديل بالازرار (SMART) =================
 SmartToggle.MouseButton1Click:Connect(function()
     smartMode = not smartMode
     if smartMode then
         SmartToggle.Text = "التبديل بالازرار: ON"
         SmartToggle.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-        print("✅ التبديل بالازرار مفعل - SHIFT و ALT يشتغلون")
     else
         SmartToggle.Text = "التبديل بالازرار: OFF"
         SmartToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        print("❌ التبديل بالازرار مقفل - وضع يدوي")
     end
 end)
 
--- ================= تسبيق (AI LEAD) =================
 AILeadToggle.MouseButton1Click:Connect(function()
     aiLeadEnabled = not aiLeadEnabled
     if aiLeadEnabled then
         AILeadToggle.Text = "تسبيق: ON"
         AILeadToggle.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-        print("🧠 تسبيق مفعل")
     else
         AILeadToggle.Text = "تسبيق: OFF"
         AILeadToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        print("🧠 تسبيق مقفل")
         lastDirection = nil
     end
 end)
 
--- ================= تسبيق سلايدر =================
 AILeadSlider.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         local num = tonumber(AILeadSlider.Text)
         if num and num >= 0 and num <= 100 then
             aiLeadStrength = num / 100
             AILabel.Text = "قوة التسبيق: " .. num .. "%"
-            print("🎯 قوة التسبيق: " .. num .. "%")
         else
             AILeadSlider.Text = tostring(math.floor(aiLeadStrength * 100))
         end
     end
 end)
 
--- ESP
 ESPToggle.MouseButton1Click:Connect(function()
     espEnabledStatus = not espEnabledStatus
     ESPToggle.Text = "ESP: " .. (espEnabledStatus and "ON" or "OFF")
@@ -992,17 +930,14 @@ ESPToggle.MouseButton1Click:Connect(function()
     end
 end)
 
--- Aimbot
 AimbotToggle.MouseButton1Click:Connect(function()
     AimbotOn = not AimbotOn
     AimbotToggle.Text = "Aimbot: " .. (AimbotOn and "ON" or "OFF")
     AimbotToggle.BackgroundColor3 = AimbotOn and CurrentTheme.ON or CurrentTheme.OFF
 end)
 
--- Aim Part
 AimPartToggle.MouseButton1Click:Connect(function()
     if not smartMode then
-        print("⚠️ التبديل بالازرار مقفل! فعّل 'التبديل بالازرار' عشان تغير الهدف")
         return
     end
     
@@ -1012,29 +947,22 @@ AimPartToggle.MouseButton1Click:Connect(function()
         if forceMode == 1 then
             forceMode = 2
             lastModeSwitchTime = currentTime
-            print("🔴 HEAD mode")
         else
             forceMode = 1
             currentAutoIndex = 1
             lastSwitchTime = os.clock()
             currentSwitchTime = switchTimes[1]
             lastModeSwitchTime = currentTime
-            print("🔄 AUTO SWITCH mode")
         end
-    else
-        local remaining = math.ceil(MODE_SWITCH_COOLDOWN - (currentTime - lastModeSwitchTime))
-        print("⏳ Cooldown! Wait " .. remaining .. " seconds before switching")
     end
 end)
 
--- Wallcheck
 WallcheckToggle.MouseButton1Click:Connect(function()
     WallCheckEnabled = not WallCheckEnabled
     WallcheckToggle.Text = "Wallcheck: " .. (WallCheckEnabled and "ON" or "OFF")
     WallcheckToggle.BackgroundColor3 = WallCheckEnabled and CurrentTheme.ON or CurrentTheme.OFF
 end)
 
--- FOV Slider
 FOVSlider.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         local num = tonumber(FOVSlider.Text:match("%d+"))
@@ -1048,14 +976,12 @@ FOVSlider.FocusLost:Connect(function(enterPressed)
     end
 end)
 
--- FOV Circle
 FOVCircleToggle.MouseButton1Click:Connect(function()
     FOVCircleVisible = not FOVCircleVisible
     FOVCircleToggle.Text = "FOV Circle: " .. (FOVCircleVisible and "ON" or "OFF")
     FOVCircleToggle.BackgroundColor3 = FOVCircleVisible and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
 end)
 
--- ESP Inventory
 ESPInventoryToggle.MouseButton1Click:Connect(function()
     espInventoryEnabled = not espInventoryEnabled
     ESPInventoryToggle.Text = "ESP Inventory: " .. (espInventoryEnabled and "ON" or "OFF")
@@ -1065,7 +991,6 @@ ESPInventoryToggle.MouseButton1Click:Connect(function()
     end
 end)
 
--- ================= DRAG FUNCTIONS =================
 local function makeDraggable(frame, dragArea)
     local dragging, startPos, startMouse
     dragArea.InputBegan:Connect(function(input)
@@ -1102,14 +1027,4 @@ ToggleButton.MouseButton1Click:Connect(function()
 end)
 
 print("✅ AHM Script Loaded Successfully!")
-print("🎮 Controls:")
-print("   SHIFT = AUTO SWITCH (Head 0.3s ↔ Torso 0.5s)")
-print("   ALT = HEAD mode")
-print("   G = Open/Close GUI")
-print("   K = Toggle FOV Circle")
-print("   🚗 CLUTCH Button in top center - Press for black screen effect")
-print("   👁️ إخفاء القلتش: OFF by default - Click to hide CLUTCH button")
-print("   🧠 تسبيق: OFF by default - Press 'تسبيق' button to enable")
-print("   📊 قوة التسبيق: 50% default - Lead strength multiplier: 6x")
-print("   ⚙️ التبديل بالازرار: ON by default - SHIFT and ALT work")
 ApplyTheme()
