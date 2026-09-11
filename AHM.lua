@@ -533,7 +533,7 @@ local FOVCircleVisible = true
 local FOVCircleForcedOff = false
 local ProtectedPlayers = {}
 local PlayerButtons = {}
-local AIM_SMOOTHNESS = 0.8
+local AIM_SMOOTHNESS = 0.6
 local PREDICTION_TIME = 0.04
 local guiOpen = false
 
@@ -560,7 +560,7 @@ FOVCircle.Transparency = 0.6
 FOVCircle.Filled = false
 FOVCircle.Visible = false
 
--- Auto Switch: Head (0.3s) then Torso (0.5s) - As requested
+-- Auto Switch: Head (0.4s) then Torso (0.5s) - As requested
 -- Note: This is unusual but configured as you asked
 local AIM_MODES = {
     {name = "Auto Switch (Head ↔ Torso)", parts = {"Head", "HumanoidRootPart"}},
@@ -570,7 +570,7 @@ local AIM_MODES = {
 local currentAutoIndex = 1
 local lastSwitchTime = os.clock()
 
--- Create custom timing array: Head=0.3s, Torso=0.5s
+-- Create custom timing array: Head=0.4s, Torso=0.5s
 local switchTimes = {0.3, 0.5}  -- Index 1 = Head, Index 2 = Torso
 local currentSwitchTime = switchTimes[1]
 
@@ -1103,7 +1103,7 @@ end)
 
 print("✅ AHM Script Loaded Successfully!")
 print("🎮 Controls:")
-print("   SHIFT = AUTO SWITCH (Head 0.3s ↔ Torso 0.5s)")
+print("   SHIFT = AUTO SWITCH (Head 0.4s ↔ Torso 0.5s)")
 print("   ALT = HEAD mode")
 print("   G = Open/Close GUI")
 print("   K = Toggle FOV Circle")
